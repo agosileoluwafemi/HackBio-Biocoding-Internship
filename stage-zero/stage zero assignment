@@ -1,1 +1,12 @@
-a = 2
+Oluwafemi_information = {
+"Oluwafemi data": {
+    "Name": "Oluwafemi Ojo Agosile",
+    "Slack username": "Oluwafemi",
+    "Email": "agosileoluwafemi@gmail.com",
+    "Hobby": "Reading",
+    "Country": "Nigeria",
+    "Discipline": "Biochemistry",
+    "Preferred programming language": "Python"
+}
+}
+print(Oluwafemi_information)
