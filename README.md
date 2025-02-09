@@ -38,5 +38,5 @@ Your discipline. <br>
 Your preferred programming language. </p>
 
 ### Solution
-<p> In this exercise, I used the dictionary to nest all information above. <br>
+<p> In this exercise, I used the dictionary to nest all the information above. <br>
 Check stage-zero in this repo for code. </p>
