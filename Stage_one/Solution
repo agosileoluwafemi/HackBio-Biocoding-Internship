@@ -1,0 +1,271 @@
+1.
+def translate_dna_to_protein(dna_sequence):
+    # Standard genetic code dictionary
+    genetic_code = {
+        'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
+        'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
+        'AAC':'N', 'AAT':'N', 'AAA':'K', 'AAG':'K',
+        'AGC':'S', 'AGT':'S', 'AGA':'R', 'AGG':'R',
+        'CTA':'L', 'CTC':'L', 'CTG':'L', 'CTT':'L',
+        'CCA':'P', 'CCC':'P', 'CCG':'P', 'CCT':'P',
+        'CAC':'H', 'CAT':'H', 'CAA':'Q', 'CAG':'Q',
+        'CGA':'R', 'CGC':'R', 'CGG':'R', 'CGT':'R',
+        'GTA':'V', 'GTC':'V', 'GTG':'V', 'GTT':'V',
+        'GCA':'A', 'GCC':'A', 'GCG':'A', 'GCT':'A',
+        'GAC':'D', 'GAT':'D', 'GAA':'E', 'GAG':'E',
+        'GGA':'G', 'GGC':'G', 'GGG':'G', 'GGT':'G',
+        'TCA':'S', 'TCC':'S', 'TCG':'S', 'TCT':'S',
+        'TTC':'F', 'TTT':'F', 'TTA':'L', 'TTG':'L',
+        'TAC':'Y', 'TAT':'Y', 'TAA':'_', 'TAG':'_',
+        'TGC':'C', 'TGT':'C', 'TGA':'_', 'TGG':'W'
+    }
+    
+    # Initialize an empty protein sequence
+    protein_sequence = ""
+    
+    # Iterate over the DNA sequence in steps of 3 (codons)
+    for i in range(0, len(dna_sequence), 3):
+        codon = dna_sequence[i:i+3]  # Extract the codon
+        if len(codon) == 3:  # Ensure the codon is complete
+            amino_acid = genetic_code.get(codon, '?')  # Translate the codon
+            protein_sequence += amino_acid
+    
+    return protein_sequence
+
+dna_sequence = "AATTCGGGC"
+protein_sequence = translate_dna_to_protein(dna_sequence)
+print(f"The DNA sequence {dna_sequence} translates to the protein sequence: {protein_sequence}")
+
+
+2a.
+import numpy as np
+import matplotlib.pyplot as plt
+
+def logistic_growth_with_random_phases(K, P0, r, total_time, lag_randomness=0.5, exp_randomness=0.5):
+    """
+    Simulates logistic population growth with randomized lag and exponential phases.
+
+    Parameters:
+        K (float): Carrying capacity of the population.
+        P0 (float): Initial population size.
+        r (float): Base growth rate.
+        total_time (int): Total time for the simulation.
+        lag_randomness (float): Randomness factor for the lag phase (0 to 1).
+        exp_randomness (float): Randomness factor for the exponential phase (0 to 1).
+
+    Returns:
+        t (numpy array): Time points.
+        P (numpy array): Population at each time point.
+    """
+    # Randomize the lag phase
+    lag_phase = np.random.uniform(0, lag_randomness * total_time)
+    
+    # Randomize the exponential phase
+    exp_phase = np.random.uniform(lag_phase, lag_phase + exp_randomness * total_time)
+    
+    # Adjust the growth rate for the exponential phase
+    adjusted_r = r * np.random.uniform(0.5, 1.5)  # Randomize growth rate within 50% to 150% of r
+    
+    # Time array
+    t = np.linspace(0, total_time, 1000)
+    
+    # Initialize population array
+    P = np.zeros_like(t)
+    
+    # Simulate logistic growth
+    for i, time in enumerate(t):
+        if time < lag_phase:
+            P[i] = P0  # Lag phase: population remains constant
+        elif time < exp_phase:
+            # Exponential phase: population grows exponentially
+            P[i] = P0 * np.exp(adjusted_r * (time - lag_phase))
+        else:
+            # Stationary phase: logistic growth
+            P[i] = K / (1 + ((K - P0) / P0) * np.exp(-adjusted_r * (time - exp_phase)))
+    
+    return t, P
+
+# Example usage
+K = 1000  # Carrying capacity
+P0 = 10   # Initial population
+r = 0.1   # Base growth rate
+total_time = 100  # Total simulation time
+
+# Generate the growth curve
+t, P = logistic_growth_with_random_phases(K, P0, r, total_time, lag_randomness=0.3, exp_randomness=0.4)
+
+# Plot the results
+plt.figure(figsize=(10, 6))
+plt.plot(t, P, label="Population Growth")
+plt.xlabel("Time")
+plt.ylabel("Population")
+plt.title("Logistic Population Growth with Randomized Phases")
+plt.axvline(x=np.percentile(t, 30), color='r', linestyle='--', label="End of Lag Phase")
+plt.axvline(x=np.percentile(t, 70), color='g', linestyle='--', label="End of Exponential Phase")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+2b.
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define the logistic growth function with random phases
+def logistic_growth_with_random_phases(K, P0, r, total_time, lag_randomness=0.5, exp_randomness=0.5):
+    """
+    Simulates logistic population growth with randomized lag and exponential phases.
+
+    Parameters:
+        K (float): Carrying capacity of the population.
+        P0 (float): Initial population size.
+        r (float): Base growth rate.
+        total_time (int): Total time for the simulation.
+        lag_randomness (float): Randomness factor for the lag phase (0 to 1).
+        exp_randomness (float): Randomness factor for the exponential phase (0 to 1).
+
+    Returns:
+        t (numpy array): Time points.
+        P (numpy array): Population at each time point.
+    """
+    # Randomize the lag phase
+    lag_phase = np.random.uniform(0, lag_randomness * total_time)
+    
+    # Randomize the exponential phase
+    exp_phase = np.random.uniform(lag_phase, lag_phase + exp_randomness * total_time)
+    
+    # Adjust the growth rate for the exponential phase
+    adjusted_r = r * np.random.uniform(0.5, 1.5)  # Randomize growth rate within 50% to 150% of r
+    
+    # Time array
+    t = np.linspace(0, total_time, 1000)
+    
+    # Initialize population array
+    P = np.zeros_like(t)
+    
+    # Simulate logistic growth
+    for i, time in enumerate(t):
+        if time < lag_phase:
+            P[i] = P0  # Lag phase: population remains constant
+        elif time < exp_phase:
+            # Exponential phase: population grows exponentially
+            P[i] = P0 * np.exp(adjusted_r * (time - lag_phase))
+        else:
+            # Stationary phase: logistic growth
+            P[i] = K / (1 + ((K - P0) / P0) * np.exp(-adjusted_r * (time - exp_phase)))
+    
+    return t, P
+
+# Parameters for the simulation
+K = 1000  # Carrying capacity
+P0 = 10   # Initial population
+r = 0.1   # Base growth rate
+total_time = 100  # Total simulation time
+num_curves = 100  # Number of growth curves to generate
+
+# Generate 100 growth curves
+growth_curves = []
+for i in range(num_curves):
+    t, P = logistic_growth_with_random_phases(K, P0, r, total_time, lag_randomness=0.3, exp_randomness=0.4)
+    growth_curves.append(P)
+
+# Create a DataFrame
+time_points = np.linspace(0, total_time, 1000)
+df = pd.DataFrame(growth_curves, columns=[f"Time_{t:.2f}" for t in time_points])
+
+# Add a column for the curve ID
+df.insert(0, "Curve_ID", range(1, num_curves + 1))
+
+# Display the first few rows of the DataFrame
+print(df.head())
+
+# Save the DataFrame to a CSV file (optional)
+df.to_csv("growth_curves.csv", index=False)
+
+# Plot a few growth curves for visualization
+plt.figure(figsize=(10, 6))
+for i in range(5):  # Plot the first 5 curves
+    plt.plot(time_points, df.iloc[i, 1:], label=f"Curve {i+1}")
+plt.xlabel("Time")
+plt.ylabel("Population")
+plt.title("Logistic Population Growth Curves")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+3.
+import numpy as np
+
+def time_to_80_percent(t, P, K):
+    """
+    Determines the time it takes for the population to reach 80% of the carrying capacity.
+
+    Parameters:
+        t (numpy array): Time points.
+        P (numpy array): Population at each time point.
+        K (float): Carrying capacity.
+
+    Returns:
+        float: Time to reach 80% of K.
+    """
+    # Calculate 80% of the carrying capacity
+    target_population = 0.8 * K
+    
+    # Find the first time point where the population >= 80% of K
+    for time, population in zip(t, P):
+        if population >= target_population:
+            return time
+    
+    # If the population never reaches 80% of K, return None
+    return None
+
+# Example usage
+# Generate a growth curve using the logistic_growth_with_random_phases function
+K = 1000  # Carrying capacity
+P0 = 10   # Initial population
+r = 0.1   # Base growth rate
+total_time = 100  # Total simulation time
+
+t, P = logistic_growth_with_random_phases(K, P0, r, total_time, lag_randomness=0.3, exp_randomness=0.4)
+
+# Calculate the time to reach 80% of K
+time_80_percent = time_to_80_percent(t, P, K)
+
+if time_80_percent is not None:
+    print(f"Time to reach 80% of the carrying capacity: {time_80_percent:.2f}")
+else:
+    print("The population did not reach 80% of the carrying capacity within the simulation time.")
+
+4.
+def hamming_distance(str1, str2):
+    """
+    Calculate the Hamming distance between two strings.
+
+    Parameters:
+        str1 (str): The first string.
+        str2 (str): The second string.
+
+    Returns:
+        int: The Hamming distance between the two strings.
+    """
+    # Check if the strings are of equal length
+    if len(str1) != len(str2):
+        raise ValueError("Strings must be of equal length to calculate Hamming distance.")
+    
+    # Calculate the Hamming distance
+    distance = 0
+    for char1, char2 in zip(str1, str2):
+        if char1 != char2:
+            distance += 1
+    
+    return distance
+
+# Example usage
+str1 = "Oluwafemi02"
+str2 = "Agosilefemi"
+
+try:
+    distance = hamming_distance(str1, str2)
+    print(f"The Hamming distance between '{str1}' and '{str2}' is: {distance}")
+except ValueError as e:
+    print(e)
